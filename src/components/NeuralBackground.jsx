@@ -125,6 +125,12 @@ export default function NeuralBackground() {
     }
 
     function animate() {
+      // Pause when a modal is open (avoids GPU conflict with overlay)
+      if (document.body.style.overflow === 'hidden') {
+        animFrameRef.current = requestAnimationFrame(animate)
+        return
+      }
+
       ctx.fillStyle = 'rgba(5, 8, 22, 0.15)'
       ctx.fillRect(0, 0, width, height)
 

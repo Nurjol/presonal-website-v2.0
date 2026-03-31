@@ -127,7 +127,7 @@ function ProjectModal({ project, color, onClose }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8"
-      style={{ background: 'rgba(5, 8, 22, 0.85)', backdropFilter: 'blur(12px)' }}
+      style={{ background: 'rgba(5, 8, 22, 0.97)' }}
       onClick={onClose}
     >
       <motion.div
