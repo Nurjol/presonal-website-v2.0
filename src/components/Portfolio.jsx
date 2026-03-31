@@ -135,7 +135,7 @@ function ProjectModal({ project, color, onClose }) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 30, scale: 0.97 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-2xl"
+        className="relative w-full max-w-2xl max-h-[88vh] flex flex-col rounded-2xl"
         style={{
           background: '#0a0e1a',
           border: `1px solid ${color}25`,
@@ -145,15 +145,11 @@ function ProjectModal({ project, color, onClose }) {
       >
         {/* Image or placeholder */}
         {project.image ? (
-          <div className="relative h-52 overflow-hidden rounded-t-2xl">
+          <div className="rounded-t-2xl overflow-hidden" style={{ background: '#06090f' }}>
             <img
               src={project.image}
               alt={project.title}
-              className="w-full h-full object-cover"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, #0a0e1a 0%, transparent 50%)' }}
+              className="w-full h-auto object-contain"
             />
           </div>
         ) : (
@@ -163,13 +159,13 @@ function ProjectModal({ project, color, onClose }) {
           />
         )}
 
-        {/* Close button */}
+        {/* Close button — fixed, doesn't scroll */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200"
-          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200"
+          style={{ background: 'rgba(10,14,26,0.9)', border: '1px solid rgba(255,255,255,0.1)' }}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(10,14,26,0.9)'}
           data-hover
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-gray-400">
@@ -177,6 +173,8 @@ function ProjectModal({ project, color, onClose }) {
           </svg>
         </button>
 
+        {/* Scrollable content */}
+        <div className="overflow-y-auto flex-1">
         <div className="p-7 pt-5 flex flex-col gap-6">
           {/* Title block */}
           <div>
@@ -270,6 +268,7 @@ function ProjectModal({ project, color, onClose }) {
             </div>
           )}
         </div>
+        </div>{/* end scrollable */}
       </motion.div>
     </motion.div>
   )
@@ -328,15 +327,11 @@ function ProjectCard({ project, color, index, inView, onClick }) {
       >
         {/* Image or placeholder */}
         {project.image ? (
-          <div className="relative overflow-hidden h-44">
+          <div className="overflow-hidden" style={{ background: '#06090f' }}>
             <img
               src={project.image}
               alt={project.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, #050816 0%, transparent 55%)' }}
+              className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
             />
           </div>
         ) : (
