@@ -1,5 +1,5 @@
-import { useRef, useState, useCallback } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useRef, useState, useCallback, useEffect } from 'react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 
 const eras = [
   {
@@ -14,12 +14,16 @@ const eras = [
         id: 'em-1',
         title: 'AI Engineering at E-Mongolia',
         subtitle: 'LLM · RAG · Automation',
-        description:
-          'Developing intelligent automation and RAG-based systems using LangChain, LlamaIndex, Ollama and HuggingFace. Designing and deploying production AI workflows on Google Cloud Platform for government-scale digital services.',
+        description: 'Developing intelligent automation and RAG-based systems using LangChain, LlamaIndex, Ollama and HuggingFace for government-scale digital services.',
         image: null,
         tags: ['LangChain', 'LlamaIndex', 'Ollama', 'HuggingFace', 'GCP', 'RAG'],
         link: null,
         comingSoon: true,
+        detail: {
+          when: 'March 2025 – Present',
+          how: 'Working on production LLM systems integrating retrieval-augmented generation pipelines, vector databases, and open-source models via Ollama. Designing end-to-end AI workflows deployed on Google Cloud Platform.',
+          acquired: ['LangChain & LlamaIndex RAG pipelines', 'Open-source LLM deployment with Ollama', 'HuggingFace model fine-tuning', 'Production AI system design', 'GCP AI infrastructure'],
+        },
       },
     ],
   },
@@ -29,18 +33,22 @@ const eras = [
     company: '@ Novelsoft LLC',
     period: 'March 2023 – March 2025',
     color: '#a855f7',
-    description: 'Data science and analytics work for Mongolia\'s public sector.',
+    description: "Data science and analytics work for Mongolia's public sector.",
     projects: [
       {
         id: 'ns-1',
         title: 'MOE Analytics Dashboard',
         subtitle: 'Ministry of Education & Science of Mongolia',
-        description:
-          "Comprehensive analytics platform on Mongolia's largest educational data system (ESIS). 9 sub-dashboards covering teacher shortage, movement, supply, salary and demographics — directly shaping national education policy.",
+        description: "Comprehensive analytics platform on Mongolia's largest educational data system (ESIS). 9 sub-dashboards covering teacher shortage, movement, supply, salary and demographics — directly shaping national education policy.",
         image: '/images/portfolio/dashboard.png',
         tags: ['Tableau', 'SQL', 'BigQuery', 'GCP', 'ETL', 'Airflow'],
         link: 'https://dashboard.edu.mn/',
         linkLabel: 'Live Dashboard',
+        detail: {
+          when: '2023 – 2025, Novelsoft LLC',
+          how: "Built on top of Mongolia's ESIS (Educational System Information System) — the country's largest educational database. Designed and implemented ETL pipelines using Airflow and BigQuery on GCP to process raw data. Built 9 interactive Tableau dashboards, each modeled around 5 critical use cases: teacher shortage, teacher movement, teacher supply, teacher salary, and teacher demographics. Collaborated closely with the Ministry of Education and Science stakeholders to define KPIs and visualization requirements.",
+          acquired: ['Advanced SQL and data modeling', 'Tableau Desktop & Tableau Prep', 'Google Cloud Platform (BigQuery, Dataflow)', 'ETL/ELT pipeline design with Airflow', 'Stakeholder communication and requirements gathering', 'Large-scale government data systems'],
+        },
       },
     ],
   },
@@ -56,40 +64,218 @@ const eras = [
         id: 'uni-1',
         title: 'Fall Detection Model',
         subtitle: 'Deep Learning · OpenPose · COCO',
-        description:
-          'Real-time fall detection using OpenPose keypoint estimation and the COCO dataset. Processes human skeletal data to classify fall events — built for safety monitoring applications.',
+        description: 'Real-time fall detection using OpenPose keypoint estimation and the COCO dataset. Processes human skeletal data to classify fall events — built for safety monitoring applications.',
         image: '/images/portfolio/fall.png',
         tags: ['Deep Learning', 'OpenPose', 'OpenCV', 'Python'],
         link: 'https://github.com/Nurjol/Fall-Detecting-Model-using-OpenPose',
         linkLabel: 'GitHub',
+        detail: {
+          when: '2022, Computer Vision course — Inha University',
+          how: 'Used OpenPose to extract 18-point human skeletal keypoints from video frames. Built a classification model that analyzes the angle and velocity of key joints (hip, shoulder, knee) to distinguish a fall from normal movement. Trained and validated on the COCO dataset with custom fall sequence data. Implemented in Python with OpenCV for real-time video processing.',
+          acquired: ['OpenPose human pose estimation', 'Computer Vision with OpenCV', 'Deep learning classification', 'Keypoint-based feature engineering', 'Real-time video processing with Python'],
+        },
       },
       {
         id: 'uni-2',
         title: 'Apartment Price Prediction',
         subtitle: 'MLP · XGBoost · Feature Engineering',
-        description:
-          'ML model predicting apartment prices using multi-layer perceptrons and gradient boosting. Incorporates diverse feature engineering to achieve accurate real estate valuations.',
+        description: 'ML model predicting apartment prices using multi-layer perceptrons and gradient boosting. Incorporates diverse feature engineering to achieve accurate real estate valuations.',
         image: '/images/portfolio/predict.png',
         tags: ['XGBoost', 'MLP', 'Scikit-learn', 'Python'],
         link: 'https://github.com/Nurjol/AI-Model-for-Predicting-House-price',
         linkLabel: 'GitHub',
+        detail: {
+          when: '2022, Machine Learning course — Inha University',
+          how: 'Collected and cleaned real estate data with variables including location, floor, area, age of building, and nearby amenities. Engineered features and compared two model architectures — a multi-layer perceptron (MLP) and XGBoost gradient boosting. Tuned hyperparameters using cross-validation. XGBoost outperformed MLP on this dataset due to the tabular nature of the features.',
+          acquired: ['XGBoost and gradient boosting', 'Neural network architecture (MLP)', 'Feature engineering for tabular data', 'Hyperparameter tuning & cross-validation', 'Scikit-learn ML pipeline'],
+        },
       },
       {
         id: 'uni-3',
         title: 'Space Shuttle Game',
         subtitle: 'OpenGL · C++ · Custom Renderer',
-        description:
-          'Space shuttle game built from scratch in C++ with OpenGL. Features a custom rendering pipeline, physics-based movement and real-time graphics — a deep dive into low-level graphics programming.',
+        description: 'Space shuttle game built from scratch in C++ with OpenGL. Features a custom rendering pipeline, physics-based movement and real-time graphics.',
         image: '/images/portfolio/space.png',
         tags: ['C++', 'OpenGL', 'Game Dev', 'Graphics'],
         link: 'https://github.com/Nurjol/Space-Shuttle-Game-OpenGL',
         linkLabel: 'GitHub',
+        detail: {
+          when: '2021, Computer Graphics course — Inha University',
+          how: 'Built entirely from scratch in C++ without a game engine. Implemented a custom OpenGL rendering pipeline with vertex and fragment shaders. Added physics-based movement for the shuttle including thrust, gravity simulation, and collision detection. The game is approximately 50% complete — the core engine and movement system are fully functional.',
+          acquired: ['OpenGL rendering pipeline', 'GLSL vertex & fragment shaders', 'C++ systems programming', 'Physics simulation (thrust, gravity)', 'Low-level graphics programming fundamentals'],
+        },
       },
     ],
   },
 ]
 
-function ProjectCard({ project, color, index, inView }) {
+function ProjectModal({ project, color, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [onClose])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8"
+      style={{ background: 'rgba(5, 8, 22, 0.85)', backdropFilter: 'blur(12px)' }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 40, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 30, scale: 0.97 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-2xl"
+        style={{
+          background: '#0a0e1a',
+          border: `1px solid ${color}25`,
+          boxShadow: `0 0 60px ${color}10`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Image or placeholder */}
+        {project.image ? (
+          <div className="relative h-52 overflow-hidden rounded-t-2xl">
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover"
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(to top, #0a0e1a 0%, transparent 50%)' }}
+            />
+          </div>
+        ) : (
+          <div
+            className="h-24 rounded-t-2xl"
+            style={{ background: `linear-gradient(135deg, ${color}10, ${color}05)` }}
+          />
+        )}
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200"
+          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          data-hover
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-gray-400">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div className="p-7 pt-5 flex flex-col gap-6">
+          {/* Title block */}
+          <div>
+            <p className="text-xs font-mono mb-1.5" style={{ color }}>{project.subtitle}</p>
+            <h3 className="font-space font-bold text-2xl text-white leading-snug">{project.title}</h3>
+            <p className="text-sm text-gray-400 mt-2 leading-relaxed">{project.description}</p>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs font-mono px-3 py-1 rounded-full"
+                style={{ background: `${color}10`, color, border: `1px solid ${color}22` }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* When */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ background: `${color}15` }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" className="w-3 h-3">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <path d="M16 2v4M8 2v4M3 10h18" />
+                </svg>
+              </div>
+              <span className="text-xs font-mono font-semibold uppercase tracking-widest" style={{ color }}>When</span>
+            </div>
+            <p className="text-sm text-gray-300 pl-7">{project.detail.when}</p>
+          </div>
+
+          {/* How I built it */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ background: `${color}15` }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" className="w-3 h-3">
+                  <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </div>
+              <span className="text-xs font-mono font-semibold uppercase tracking-widest" style={{ color }}>How I Built It</span>
+            </div>
+            <p className="text-sm text-gray-400 leading-relaxed pl-7">{project.detail.how}</p>
+          </div>
+
+          {/* Skills acquired */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ background: `${color}15` }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" className="w-3 h-3">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <span className="text-xs font-mono font-semibold uppercase tracking-widest" style={{ color }}>Skills Acquired</span>
+            </div>
+            <div className="pl-7 flex flex-col gap-2">
+              {project.detail.acquired.map((skill, i) => (
+                <motion.div
+                  key={skill}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + i * 0.06 }}
+                  className="flex items-center gap-2 text-sm text-gray-300"
+                >
+                  <div className="w-1 h-1 rounded-full shrink-0" style={{ background: color }} />
+                  {skill}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* External link */}
+          {project.link && (
+            <div className="pt-1 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:gap-3"
+                style={{ color }}
+                data-hover
+              >
+                {project.linkLabel}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                  <path d="M7 17L17 7M17 7H7M17 7v10" />
+                </svg>
+              </a>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function ProjectCard({ project, color, index, inView, onClick }) {
   const cardRef = useRef(null)
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [hovered, setHovered] = useState(false)
@@ -117,11 +303,14 @@ function ProjectCard({ project, color, index, inView }) {
       onMouseMove={onMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={onMouseLeave}
+      onClick={onClick}
       style={{
         transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
         transition: hovered ? 'transform 0.1s ease' : 'transform 0.5s ease',
+        cursor: 'pointer',
       }}
       className="group relative rounded-2xl overflow-hidden h-full"
+      data-hover
     >
       {/* Hover glow */}
       <div
@@ -137,7 +326,7 @@ function ProjectCard({ project, color, index, inView }) {
         className="glass rounded-2xl overflow-hidden h-full flex flex-col"
         style={{ border: `1px solid rgba(255,255,255,0.05)` }}
       >
-        {/* Image or coming soon placeholder */}
+        {/* Image or placeholder */}
         {project.image ? (
           <div className="relative overflow-hidden h-44">
             <img
@@ -155,7 +344,6 @@ function ProjectCard({ project, color, index, inView }) {
             className="relative h-44 flex items-center justify-center overflow-hidden"
             style={{ background: `linear-gradient(135deg, ${color}08, ${color}04)` }}
           >
-            {/* Animated pulse circles */}
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
@@ -165,9 +353,7 @@ function ProjectCard({ project, color, index, inView }) {
                 transition={{ duration: 2.5, delay: i * 0.8, repeat: Infinity, ease: 'easeOut' }}
               />
             ))}
-            <div
-              className="relative z-10 flex flex-col items-center gap-2"
-            >
+            <div className="relative z-10 flex flex-col items-center gap-2">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{ background: `${color}15`, border: `1px solid ${color}30` }}
@@ -184,62 +370,44 @@ function ProjectCard({ project, color, index, inView }) {
         {/* Content */}
         <div className="p-5 flex flex-col flex-1 gap-3">
           <div>
-            <p className="text-xs font-mono mb-1" style={{ color }}>
-              {project.subtitle}
-            </p>
-            <h3 className="font-space font-semibold text-base text-white leading-snug">
-              {project.title}
-            </h3>
+            <p className="text-xs font-mono mb-1" style={{ color }}>{project.subtitle}</p>
+            <h3 className="font-space font-semibold text-base text-white leading-snug">{project.title}</h3>
           </div>
 
-          <p className="text-sm text-gray-400 leading-relaxed flex-1">{project.description}</p>
+          <p className="text-sm text-gray-400 leading-relaxed flex-1 line-clamp-3">{project.description}</p>
 
-          {/* Tags */}
           <div className="flex flex-wrap gap-1.5">
             {project.tags.map((tag) => (
               <span
                 key={tag}
                 className="text-xs font-mono px-2 py-0.5 rounded"
-                style={{
-                  background: `${color}08`,
-                  color: '#64748b',
-                  border: `1px solid ${color}15`,
-                }}
+                style={{ background: `${color}08`, color: '#64748b', border: `1px solid ${color}15` }}
               >
                 {tag}
               </span>
             ))}
           </div>
 
-          {/* Link */}
-          {project.comingSoon ? (
-            <span className="text-xs font-mono mt-1" style={{ color: `${color}66` }}>
-              More details coming soon
-            </span>
-          ) : (
-            <a
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:gap-3 mt-1"
-              style={{ color }}
-              data-hover
-            >
-              {project.linkLabel}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                <path d="M7 17L17 7M17 7H7M17 7v10" />
-              </svg>
-            </a>
-          )}
+          {/* Click to expand hint */}
+          <div
+            className="flex items-center gap-1.5 text-xs font-mono mt-1 transition-opacity duration-200"
+            style={{ color: `${color}66`, opacity: hovered ? 1 : 0.4 }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+            </svg>
+            Click to expand
+          </div>
         </div>
       </div>
     </motion.div>
   )
 }
 
-function EraSection({ era, globalInView }) {
+function EraSection({ era }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
+  const [activeProject, setActiveProject] = useState(null)
 
   return (
     <div ref={ref} className="relative">
@@ -250,7 +418,6 @@ function EraSection({ era, globalInView }) {
         transition={{ duration: 0.55 }}
         className="flex flex-wrap items-center gap-4 mb-8"
       >
-        {/* Accent line */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div
             className="w-1 h-10 rounded-full shrink-0"
@@ -260,18 +427,11 @@ function EraSection({ era, globalInView }) {
             <div className="flex items-center gap-3 flex-wrap">
               <span
                 className="text-xs font-mono px-2.5 py-1 rounded-full"
-                style={{
-                  background: `${era.color}12`,
-                  color: era.color,
-                  border: `1px solid ${era.color}25`,
-                }}
+                style={{ background: `${era.color}12`, color: era.color, border: `1px solid ${era.color}25` }}
               >
                 {era.label}
               </span>
-              <h3
-                className="font-space font-bold text-xl md:text-2xl"
-                style={{ color: era.color }}
-              >
+              <h3 className="font-space font-bold text-xl md:text-2xl" style={{ color: era.color }}>
                 {era.company}
               </h3>
               <span className="text-xs font-mono text-gray-600">{era.period}</span>
@@ -279,15 +439,13 @@ function EraSection({ era, globalInView }) {
             <p className="text-sm text-gray-500 mt-1">{era.description}</p>
           </div>
         </div>
-
-        {/* Decorative line extending right */}
         <div
           className="hidden md:block flex-1 h-px"
           style={{ background: `linear-gradient(to right, ${era.color}20, transparent)` }}
         />
       </motion.div>
 
-      {/* Project cards grid */}
+      {/* Cards */}
       <div
         className={`grid gap-5 ${
           era.projects.length === 1
@@ -304,9 +462,21 @@ function EraSection({ era, globalInView }) {
             color={era.color}
             index={i}
             inView={inView}
+            onClick={() => setActiveProject(project)}
           />
         ))}
       </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {activeProject && (
+          <ProjectModal
+            project={activeProject}
+            color={era.color}
+            onClose={() => setActiveProject(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -319,14 +489,10 @@ export default function Portfolio() {
     <section id="projects" className="relative py-28 px-6">
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(168,85,247,0.025) 0%, transparent 65%)',
-        }}
+        style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(168,85,247,0.025) 0%, transparent 65%)' }}
       />
 
       <div ref={ref} className="relative z-10 max-w-6xl mx-auto">
-        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -335,22 +501,19 @@ export default function Portfolio() {
         >
           <span className="section-label">My Work</span>
           <h2 className="font-space font-bold text-4xl md:text-5xl text-white mt-3">
-            Projects &{' '}
-            <span className="gradient-text">Experience</span>
+            Projects & <span className="gradient-text">Experience</span>
           </h2>
           <p className="text-gray-500 mt-4 max-w-lg mx-auto text-sm">
-            From university experiments to production systems — a timeline of what I've built.
+            From university experiments to production systems — click any card to dive deeper.
           </p>
         </motion.div>
 
-        {/* Era sections */}
         <div className="flex flex-col gap-20">
           {eras.map((era) => (
-            <EraSection key={era.id} era={era} globalInView={inView} />
+            <EraSection key={era.id} era={era} />
           ))}
         </div>
 
-        {/* GitHub CTA */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
