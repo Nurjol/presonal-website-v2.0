@@ -1,0 +1,3 @@
+- [Project: Nurjol Portfolio](project_nurjol_portfolio.md) — personal CV site, who Nurjol is, the redesign job
+- [Avatar assets gotcha](reference_avatar_assets.md) — pixel avatars must live in public/, and which only exist as .jpg
+- [Three.js + React 18 pinning](feedback_r3f_react18.md) — why fiber/drei are pinned to v8/v9 here

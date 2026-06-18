@@ -1,172 +1,187 @@
-import { useEffect, useRef } from 'react'
+import { useRef, useMemo, Suspense } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Float, PointMaterial } from '@react-three/drei'
+import * as THREE from 'three'
 
-export default function NeuralBackground() {
-  const canvasRef = useRef(null)
-  const mouseRef = useRef({ x: -9999, y: -9999 })
-  const animFrameRef = useRef(null)
+// --- Particle field ---
+function ParticleField() {
+  const pointsRef = useRef()
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    let particles = []
-    let width, height
+  const { positions, colors } = useMemo(() => {
+    const count = 2500
+    const positions = new Float32Array(count * 3)
+    const colors = new Float32Array(count * 3)
 
-    function resize() {
-      width = canvas.width = window.innerWidth
-      height = canvas.height = window.innerHeight
+    // Neon palette: cyan #00f5ff, magenta #ff0080, lime #00ff88
+    const palette = [
+      new THREE.Color('#00f5ff'),
+      new THREE.Color('#ff0080'),
+      new THREE.Color('#00ff88'),
+    ]
+
+    for (let i = 0; i < count; i++) {
+      // Spread in a wide volume around origin
+      positions[i * 3]     = (Math.random() - 0.5) * 30
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 20
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 15
+
+      const c = palette[Math.floor(Math.random() * palette.length)]
+      colors[i * 3]     = c.r
+      colors[i * 3 + 1] = c.g
+      colors[i * 3 + 2] = c.b
     }
 
-    function createParticles() {
-      particles = []
-      const count = Math.floor((width * height) / 12000)
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          radius: Math.random() * 1.5 + 0.5,
-          opacity: Math.random() * 0.4 + 0.2,
-          // Color variation: cyan or purple
-          hue: Math.random() > 0.7 ? 280 : 190,
-        })
-      }
-    }
-
-    function drawParticle(p) {
-      ctx.beginPath()
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
-      ctx.fillStyle = `hsla(${p.hue}, 100%, 65%, ${p.opacity})`
-      ctx.fill()
-      // Glow
-      ctx.beginPath()
-      ctx.arc(p.x, p.y, p.radius * 3, 0, Math.PI * 2)
-      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 3)
-      grad.addColorStop(0, `hsla(${p.hue}, 100%, 65%, ${p.opacity * 0.4})`)
-      grad.addColorStop(1, `hsla(${p.hue}, 100%, 65%, 0)`)
-      ctx.fillStyle = grad
-      ctx.fill()
-    }
-
-    function drawConnections() {
-      const maxDist = 120
-      const mouseInfluence = 150
-
-      for (let i = 0; i < particles.length; i++) {
-        const p1 = particles[i]
-
-        // Mouse repulsion
-        const mdx = mouseRef.current.x - p1.x
-        const mdy = mouseRef.current.y - p1.y
-        const mdist = Math.sqrt(mdx * mdx + mdy * mdy)
-        if (mdist < mouseInfluence) {
-          const force = (mouseInfluence - mdist) / mouseInfluence
-          p1.vx -= (mdx / mdist) * force * 0.8
-          p1.vy -= (mdy / mdist) * force * 0.8
-        }
-
-        // Draw connections between mouse and nearby particles
-        if (mdist < mouseInfluence * 1.5) {
-          const alpha = (1 - mdist / (mouseInfluence * 1.5)) * 0.5
-          ctx.beginPath()
-          ctx.moveTo(mouseRef.current.x, mouseRef.current.y)
-          ctx.lineTo(p1.x, p1.y)
-          ctx.strokeStyle = `rgba(0, 212, 255, ${alpha})`
-          ctx.lineWidth = 0.8
-          ctx.stroke()
-        }
-
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j]
-          const dx = p1.x - p2.x
-          const dy = p1.y - p2.y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-
-          if (dist < maxDist) {
-            const alpha = (1 - dist / maxDist) * 0.25
-            const midHue = (p1.hue + p2.hue) / 2
-            ctx.beginPath()
-            ctx.moveTo(p1.x, p1.y)
-            ctx.lineTo(p2.x, p2.y)
-            ctx.strokeStyle = `hsla(${midHue}, 100%, 65%, ${alpha})`
-            ctx.lineWidth = 0.5
-            ctx.stroke()
-          }
-        }
-      }
-    }
-
-    function update() {
-      particles.forEach(p => {
-        p.x += p.vx
-        p.y += p.vy
-
-        // Dampen
-        p.vx *= 0.995
-        p.vy *= 0.995
-
-        // Add tiny random drift
-        p.vx += (Math.random() - 0.5) * 0.02
-        p.vy += (Math.random() - 0.5) * 0.02
-
-        // Clamp velocity
-        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
-        if (speed > 1.5) {
-          p.vx = (p.vx / speed) * 1.5
-          p.vy = (p.vy / speed) * 1.5
-        }
-
-        // Wrap around edges
-        if (p.x < 0) p.x = width
-        if (p.x > width) p.x = 0
-        if (p.y < 0) p.y = height
-        if (p.y > height) p.y = 0
-      })
-    }
-
-    function animate() {
-      // Pause when a modal is open (avoids GPU conflict with overlay)
-      if (document.body.style.overflow === 'hidden') {
-        animFrameRef.current = requestAnimationFrame(animate)
-        return
-      }
-
-      ctx.fillStyle = 'rgba(5, 8, 22, 0.15)'
-      ctx.fillRect(0, 0, width, height)
-
-      update()
-      drawConnections()
-      particles.forEach(drawParticle)
-
-      animFrameRef.current = requestAnimationFrame(animate)
-    }
-
-    function onMouseMove(e) {
-      mouseRef.current = { x: e.clientX, y: e.clientY }
-    }
-
-    resize()
-    createParticles()
-    animate()
-
-    window.addEventListener('resize', () => {
-      resize()
-      createParticles()
-    })
-    window.addEventListener('mousemove', onMouseMove)
-
-    return () => {
-      cancelAnimationFrame(animFrameRef.current)
-      window.removeEventListener('resize', resize)
-      window.removeEventListener('mousemove', onMouseMove)
-    }
+    return { positions, colors }
   }, [])
 
+  useFrame((state) => {
+    if (!pointsRef.current) return
+    // Slow drift rotation
+    pointsRef.current.rotation.y += 0.0006
+    pointsRef.current.rotation.x += 0.0002
+
+    // Gentle mouse parallax on the point cloud
+    const px = state.pointer.x
+    const py = state.pointer.y
+    pointsRef.current.rotation.y += px * 0.0003
+    pointsRef.current.rotation.x += py * 0.0002
+  })
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full"
-      style={{ zIndex: 0 }}
-    />
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
+        />
+        <bufferAttribute
+          attach="attributes-color"
+          args={[colors, 3]}
+        />
+      </bufferGeometry>
+      <PointMaterial
+        size={0.055}
+        vertexColors
+        transparent
+        opacity={0.75}
+        sizeAttenuation
+        depthWrite={false}
+      />
+    </points>
+  )
+}
+
+// --- Individual wireframe shape wrapper ---
+function WireShape({ geometry, position, color, rotSpeed }) {
+  const meshRef = useRef()
+
+  useFrame((state) => {
+    if (!meshRef.current) return
+    meshRef.current.rotation.x += rotSpeed[0]
+    meshRef.current.rotation.y += rotSpeed[1]
+    meshRef.current.rotation.z += rotSpeed[2]
+
+    // Very subtle mouse parallax
+    const px = state.pointer.x
+    const py = state.pointer.y
+    meshRef.current.position.x = position[0] + px * 0.4
+    meshRef.current.position.y = position[1] + py * 0.3
+  })
+
+  return (
+    <mesh ref={meshRef} position={position}>
+      {geometry}
+      <meshBasicMaterial
+        color={color}
+        wireframe
+        transparent
+        opacity={0.18}
+      />
+    </mesh>
+  )
+}
+
+// --- Scene with all shapes ---
+function Scene() {
+  const shapes = useMemo(() => [
+    {
+      id: 'ico',
+      geometry: <icosahedronGeometry args={[2.2, 1]} />,
+      position: [-6, 1.5, -5],
+      color: '#00f5ff',
+      rotSpeed: [0.002, 0.003, 0.001],
+      floatIntensity: 0.6,
+    },
+    {
+      id: 'torus',
+      geometry: <torusGeometry args={[1.8, 0.5, 8, 24]} />,
+      position: [6, -1.5, -4],
+      color: '#ff0080',
+      rotSpeed: [0.003, 0.002, 0.004],
+      floatIntensity: 0.8,
+    },
+    {
+      id: 'octa',
+      geometry: <octahedronGeometry args={[1.6, 0]} />,
+      position: [0, 3, -6],
+      color: '#00ff88',
+      rotSpeed: [0.004, 0.001, 0.003],
+      floatIntensity: 1.0,
+    },
+    {
+      id: 'tetra',
+      geometry: <tetrahedronGeometry args={[1.4, 0]} />,
+      position: [-4, -3, -3],
+      color: '#ff0080',
+      rotSpeed: [0.002, 0.005, 0.002],
+      floatIntensity: 0.7,
+    },
+  ], [])
+
+  return (
+    <>
+      <ParticleField />
+      {shapes.map((s) => (
+        <Float
+          key={s.id}
+          speed={1.2}
+          rotationIntensity={0}
+          floatIntensity={s.floatIntensity}
+          floatingRange={[-0.3, 0.3]}
+        >
+          <WireShape
+            geometry={s.geometry}
+            position={s.position}
+            color={s.color}
+            rotSpeed={s.rotSpeed}
+          />
+        </Float>
+      ))}
+    </>
+  )
+}
+
+// --- Main export ---
+export default function NeuralBackground() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: 'none',
+      }}
+    >
+      <Canvas
+        dpr={[1, 2]}
+        camera={{ position: [0, 0, 10], fov: 60, near: 0.1, far: 100 }}
+        gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
+        style={{ background: 'transparent' }}
+      >
+        <Suspense fallback={null}>
+          <Scene />
+        </Suspense>
+      </Canvas>
+    </div>
   )
 }

@@ -2,14 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   CSS CUSTOM PROPERTIES
+   ============================================================ */
+:root {
+  --cyan: #00f5ff;
+  --magenta: #ff0080;
+  --lime: #00ff88;
+  --bg: #050816;
+  /* Legacy aliases */
+  --legacy-cyan: #00d4ff;
+  --legacy-purple: #a855f7;
+  --legacy-pink: #ec4899;
+}
+
+/* ============================================================
+   GLOBAL RESET + BASE
+   ============================================================ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Hide default cursor everywhere */
+*,
+*::before,
+*::after {
+  cursor: none !important;
+}
+
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 80px;
 }
 
 body {
@@ -20,12 +45,9 @@ body {
   cursor: none;
 }
 
-/* Hide default cursor */
-*, *::before, *::after {
-  cursor: none !important;
-}
-
-/* Scrollbar */
+/* ============================================================
+   NEON SCROLLBAR
+   ============================================================ */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -33,20 +55,25 @@ body {
   background: #0d1117;
 }
 ::-webkit-scrollbar-thumb {
-  background: #00d4ff44;
+  background: rgba(0, 245, 255, 0.35);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00d4ff88;
+  background: rgba(0, 245, 255, 0.65);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.5);
 }
 
-/* Selection */
+/* ============================================================
+   SELECTION
+   ============================================================ */
 ::selection {
-  background: #00d4ff33;
-  color: #00d4ff;
+  background: rgba(0, 245, 255, 0.2);
+  color: #00f5ff;
 }
 
-/* Smooth reveal animation */
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -59,52 +86,104 @@ body {
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 20px #00d4ff33; }
-  50% { box-shadow: 0 0 40px #00d4ff66, 0 0 80px #00d4ff22; }
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.25),
+                0 0 40px rgba(0, 245, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 245, 255, 0.5),
+                0 0 80px rgba(0, 245, 255, 0.2),
+                0 0 120px rgba(0, 245, 255, 0.08);
+  }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50%       { transform: translateY(-10px); }
 }
 
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  50%       { opacity: 0; }
 }
 
-.cursor-blink {
-  animation: blink 1s infinite;
+@keyframes flicker {
+  0%   { opacity: 1; }
+  2%   { opacity: 0.85; }
+  4%   { opacity: 1; }
+  19%  { opacity: 1; }
+  21%  { opacity: 0.7; }
+  23%  { opacity: 1; }
+  80%  { opacity: 1; }
+  83%  { opacity: 0.9; }
+  87%  { opacity: 1; }
 }
 
-.glow-cyan {
-  animation: glow 3s ease-in-out infinite;
+@keyframes gridScroll {
+  from { background-position: 0 0; }
+  to   { background-position: 0 40px; }
 }
 
-.float {
-  animation: float 4s ease-in-out infinite;
+@keyframes fillBar {
+  from { width: 0%; }
+  to   { width: var(--fill-width); }
 }
 
-/* Glass card */
+@keyframes glitchShift {
+  0%   { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  10%  { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 1px); }
+  20%  { clip-path: inset(50% 0 30% 0); transform: translate(3px, -1px); }
+  30%  { clip-path: inset(30% 0 50% 0); transform: translate(-2px, 2px); }
+  40%  { clip-path: inset(60% 0 10% 0); transform: translate(2px, -2px); }
+  50%  { clip-path: inset(80% 0 5% 0);  transform: translate(-1px, 1px); }
+  60%  { clip-path: inset(5% 0 80% 0);  transform: translate(1px, -1px); }
+  70%  { clip-path: inset(20% 0 40% 0); transform: translate(-3px, 0); }
+  80%  { clip-path: inset(70% 0 15% 0); transform: translate(3px, 1px); }
+  90%  { clip-path: inset(40% 0 25% 0); transform: translate(0, -1px); }
+  100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+}
+
+/* ============================================================
+   UTILITY CLASSES  (consumed by all worker components)
+   ============================================================ */
+
+/* .glass — glassmorphism card surface */
 .glass {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* Gradient text */
+/* .neon-border — cyan neon glow border */
+.neon-border {
+  border: 1px solid rgba(0, 245, 255, 0.45);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.25),
+              inset 0 0 20px rgba(0, 245, 255, 0.03);
+}
+
+/* .gradient-text — cyan → magenta clipped gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #00d4ff, #a855f7);
+  background: linear-gradient(135deg, #00f5ff, #ff0080);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+/* .gradient-text-lime — lime → cyan clipped gradient text */
+.gradient-text-lime {
+  background: linear-gradient(135deg, #00ff88, #00f5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Legacy gradient — keeps old components from breaking */
 .gradient-text-warm {
   background: linear-gradient(135deg, #a855f7, #ec4899);
   -webkit-background-clip: text;
@@ -112,38 +191,84 @@ body {
   background-clip: text;
 }
 
-/* Section label */
+/* .section-label — mono label above section headings */
 .section-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #00d4ff;
+  color: #00f5ff;
 }
 
-/* Timeline dot glow */
+/* .pixel-grid — subtle pixel/grid background layer */
+.pixel-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(0, 245, 255, 0.03) 39px,
+      rgba(0, 245, 255, 0.03) 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 39px,
+      rgba(0, 245, 255, 0.03) 39px,
+      rgba(0, 245, 255, 0.03) 40px
+    );
+  background-size: 40px 40px;
+  animation: gridScroll 12s linear infinite;
+}
+
+/* .scanlines — CRT horizontal scanline overlay */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.06) 2px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+  z-index: 9990;
+}
+
+/* .float — bob animation */
+.float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* .cursor-blink — typewriter cursor */
+.cursor-blink {
+  animation: blink 1s infinite;
+}
+
+/* .timeline-dot — glowing dot for timeline */
 .timeline-dot {
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1), 0 0 20px rgba(0, 212, 255, 0.3);
+  box-shadow:
+    0 0 0 4px rgba(0, 245, 255, 0.1),
+    0 0 20px rgba(0, 245, 255, 0.35);
 }
 
-/* Tilt card */
-.tilt-card {
-  transform-style: preserve-3d;
-  transition: transform 0.1s ease;
-}
-
-/* Nav link hover */
+/* .nav-link — underline hover for navigation */
 .nav-link {
   position: relative;
 }
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: -3px;
   left: 0;
   width: 0;
   height: 1px;
-  background: #00d4ff;
+  background: linear-gradient(90deg, #00f5ff, #ff0080);
+  box-shadow: 0 0 6px rgba(0, 245, 255, 0.8);
   transition: width 0.3s ease;
 }
 .nav-link:hover::after,
@@ -151,12 +276,46 @@ body {
   width: 100%;
 }
 
-/* Skill bar fill animation */
-@keyframes fillBar {
-  from { width: 0%; }
-  to { width: var(--fill-width); }
+/* .glow-cyan — pulsing neon glow (kept for legacy use) */
+.glow-cyan {
+  animation: glow 3s ease-in-out infinite;
 }
 
+/* .tilt-card */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease;
+}
+
+/* .skill-fill */
 .skill-fill {
   animation: fillBar 1.5s ease forwards;
+}
+
+/* .glitch — glitch text effect (bonus) */
+.glitch {
+  position: relative;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch::before {
+  color: #ff0080;
+  animation: glitchShift 3.5s infinite linear;
+  opacity: 0.7;
+}
+.glitch::after {
+  color: #00f5ff;
+  animation: glitchShift 3.5s infinite linear reverse;
+  animation-delay: 0.1s;
+  opacity: 0.7;
+}
+
+/* .flicker — neon flicker */
+.flicker {
+  animation: flicker 5s infinite;
 }
