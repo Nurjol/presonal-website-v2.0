@@ -41,7 +41,6 @@ const eras = [
         subtitle: 'Ministry of Education & Science · GCP Big Data Architecture',
         description: "Large-scale analytics platform integrating ESIS, HEMIS, TVETS and national exam data. 5 main dashboards with 20 sub-dashboards, powered by a real-time Oracle → GCP pipeline with Medallion architecture. Successfully handed over to the Information Technology Center of Education.",
         images: [
-          '/images/portfolio/moe-adv-arch.png',
           '/images/portfolio/moe-adv-dash1.png',
           '/images/portfolio/moe-adv-dash2.png',
         ],
